@@ -7,6 +7,7 @@ group = 'this.will.be.overridden'
 subprojects {
 
     repositories {
+        mavenCentral()
         maven { url = 'https://repo.grails.org/grails/restricted' }
         maven {
             url = 'https://repository.apache.org/content/groups/snapshots'
