@@ -36,7 +36,11 @@ jobs:
           --health-retries 5
     steps:
       - name: Install psql client
-        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends postgresql-client
       - name: Create extensions
         env:
           PGPASSWORD: postgres_extensions
