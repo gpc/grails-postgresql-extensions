@@ -1,0 +1,76 @@
+plugins {
+    id 'java-library'
+    id 'org.apache.grails.gradle.grails-plugin'
+}
+
+version = projectVersion
+group = 'org.grails.plugins'
+
+grailsPublish {
+    artifactId = 'grails-postgresql-extensions'
+    githubSlug = 'gpc/grails-postgresql-extensions'
+    license.name = 'Apache-2.0'
+    title = 'Grails PostgreSQL Extensions Plugin'
+    desc = 'A Grails plugin that adds Hibernate UserTypes for PostgreSQL native types, ' +
+           'like Array, HStore, JSON, JSONB, ..., and GORM criteria extensions to query them.'
+    developers = [
+            ilopmar: 'Iván López',
+            alotor: 'Alonso Torres',
+            mattfeury: 'Matt Feury',
+            alvarosanchez: 'Alvaro Sanchez-Mariscal',
+            aeischeid: 'Aaron Eischeid',
+            mkobel: 'Moritz Kobel',
+            manuelvio: 'Manuel Unno Vio',
+            bameda: 'David Barragán Merino',
+            nobeans: 'Yasuharu Nakano',
+            burtbeckwith: 'Burt Beckwith',
+            timic: 'Timur Salyakhutdinov',
+            zlegein: 'Zach Legein',
+            tmarthal: 'Tom Marthaler',
+            pabloalba: 'Pablo Alba',
+            cornercase: 'Eamon Doyle',
+            poundex: 'Adam Pounder',
+            gregopet: 'Gregor Petrin',
+            unknown: 'Tom Potts',
+            sabst: 'Sabst',
+            donbeave: 'Alexey Zhokov',
+            jglapa: 'Jakub Glapa',
+            jamesdh: 'James Hardwick',
+            butters16: 'John Keith',
+            erichelgeson: 'Eric Helgeson',
+            albertop19: 'albertop19',
+            gtors: 'Andrey T',
+            matrei: 'Mattias Reichel',
+    ]
+}
+
+dependencies {
+
+    implementation platform("org.apache.grails:grails-bom:$grailsVersion")
+
+    compileOnly 'org.apache.grails:grails-core', { // Provided
+        // impl: Plugin
+    }
+    compileOnly 'org.apache.grails:grails-data-hibernate5', {
+        // Must be provided by the Grails application
+    }
+    compileOnly 'org.springframework:spring-core', { // Provided
+        // impl: Assert
+    }
+
+    implementation 'com.google.code.gson:gson'
+    implementation "org.hibernate:hibernate-core-jakarta:$hibernate5Version"
+    implementation 'org.postgresql:postgresql'
+
+    testImplementation 'org.spockframework:spock-core'
+
+    testRuntimeOnly 'org.springframework:spring-core', {
+        // Assert
+    }
+}
+
+compileJava.options.release = javaVersion.toInteger()
+
+apply {
+    from rootProject.layout.projectDirectory.file('gradle/test-config.gradle')
+}

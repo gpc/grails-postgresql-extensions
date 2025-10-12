@@ -1,17 +1,13 @@
-# ⚠️ This plugin is not maintained anymore ⚠️
+# Grails PostgreSQL Extensions
 
-## Grails Postgresql Extensions
+This is a Grails plugin that provides Hibernate user types to use PostgreSQL native types such as Array, Hstore, Json,
+Jsonb, ..., from a Grails application. It also provides new criteria to query these new native types.
 
-#### THIS BRANCH (master) IS FOR GRAILS 4 AND HIBERNATE 5.4 ####
-
-This is a grails plugin that provides hibernate user types to use Postgresql native types such as Array, Hstore, Json,
-Jsonb... from a Grails application. It also provides new criterias to query this new native types.
-
-Currently the plugin supports array, hstore, json and jsonb fields as well as some query methods.
+Currently, the plugin supports array, hstore, json and jsonb fields as well as some query methods.
 More native types and query methods will be added in the future.
 
 * [Installation](#installation)
-  * [Postgresql driver](#postgresql-driver)
+  * [PostgreSQL driver](#postgresql-driver)
   * [Hibernate plugin](#hibernate-plugin)
 * [Configuration](#configuration)
 * [Native Types](#native-types)
@@ -46,90 +42,26 @@ More native types and query methods will be added in the future.
   * [Order](#order)
     * [Random order](#random-order)
     * [Sql formula](#sql-formula)
-* [Authors](#authors)
 * [Release Notes](#release-notes)
 
 
 ## Installation
 
-The Grails 3 version supports both Hibernate 4.X (versions 4.x.x of the plugin) and Hibernate 5.X (versions 5.x.x of the
-plugin). In `build.gradle` add the `jcenter` repository and the following dependency to install the plugin:
-
-
-```groovy
-repositories {
-    ...
-    jcenter()
-    ...
-}
-
-dependencies {
-    ...
-    compile 'org.grails.plugins:postgresql-extensions:<version>'
-    ...
-}
-```
-
-### Postgresql driver
-
-You also need to install the Postgresql jdbc driver. You can see all available Postgresql jdbc libraries versions at
-[MVN Repository](http://mvnrepository.com/artifact/org.postgresql/postgresql).
+The Grails 7 version of this plugin supports Hibernate 5.
+In `build.gradle` add the following dependencies to install the plugin:
 
 ```groovy
 dependencies {
-    ...
-    provided 'org.postgresql:postgresql:9.4.1211.jre7'
-    ...
-}
-```
-
-### Hibernate plugin
-
-It's also necessary to install the Grails-Hibernate plugin. Depending if you use Hibernate 4 or Hibernate 5 you'll need
-different dependencies. Please make sure you use the latest versions of the plugin and the hibernate dependencies
-
-
-```groovy
-// Hibernate 4
-buildscript {
-    ...
-    dependencies {
-        ...
-        classpath "org.grails.plugins:hibernate4:6.0.3"
-    }
-}
-
-dependencies {
-    ...
-    compile "org.grails.plugins:hibernate4"
-    compile "org.hibernate:hibernate-core:4.3.11.Final"
-    compile "org.hibernate:hibernate-ehcache:4.3.11.Final"
-    ...
-}
-```
-
-```groovy
-// Hibernate 5
-buildscript {
-    ...
-    dependencies {
-        ...
-        classpath "org.grails.plugins:hibernate5:6.0.3"
-    }
-}
-
-dependencies {
-    ...
-    compile "org.grails.plugins:hibernate5"
-    compile "org.hibernate:hibernate-core:5.1.1.Final"
-    compile "org.hibernate:hibernate-ehcache:5.1.1.Final"
-    ...
+    //...
+    implementation 'org.apache.grails:grails-data-hibernate5'
+    implementation 'org.grails.plugins:grails-postgresql-extensions:<version>'
+    //...
 }
 ```
 
 ## Configuration
 
-After install the plugin you have to use a new Postgresql Hibernate Dialect in your application. Add it to the
+After installing the plugin you have to use a new PostgreSQL Hibernate Dialect in your application. Add it to the
 `grails-app/conf/application.yml` file:
 
 ```yaml
@@ -144,24 +76,16 @@ dataSource:
     dbCreate: update
 
 hibernate:
-    dialect: net.kaleidos.hibernate.PostgresqlExtensionsDialect
+    dialect: gpc.pgext.hibernate.PostgresqlExtensionsDialect
 ```
 
-If you just only add the dialect, hibernate will create a new sequence for every table to generate the sequential ids
+If you just add the dialect, hibernate will create a new sequence for every table to generate the sequential ids
 used for the primary keys instead of a global sequence for all your tables.
 
-If you're using Hibernate 4 you can also deactivate this behaviour and create only one unique sequence for all the tables with the following
+You can also deactivate this behavior and create only one unique sequence for all the tables with the following
 property in your datasource definition:
 
-```yaml
-dataSource:
-  postgresql:
-    extensions:
-      sequence_per_table: false
-}
-```
-
-For Hibernate 5 add the following to `grails-app/conf/application.groovy`:
+Add the following to `grails-app/conf/application.groovy`:
 
 ```groovy
 grails.gorm.default.mapping = {
@@ -182,14 +106,14 @@ The plugin supports the definition of `Integer`, `Long`, `Float`, `Double`, `Str
 classes.
 
 The `Enum` arrays behaves almost identical to `Integer` arrays in that they store and retrieve an array of ints. The
-difference, however, is that this is used with an Array of Enums, rather than Ints. The Enums are serialized to their
+difference, however, is that this is used with an Array of Enums, rather than ints. The Enums are serialized to their
 ordinal value before persisted to the database. On retrieval, they are then converted back into their original `Enum`
 type.
 
 #### Example
 
 ```groovy
-import net.kaleidos.hibernate.usertype.ArrayType
+import gpc.pgext.hibernate.usertype.ArrayType
 
 class Like {
     Integer[] favoriteNumbers = []
@@ -244,11 +168,11 @@ And now, with `psql`:
   1 | {123,239,3498239,2344235} | {0.3,0.1}                 | {100.33,44.11}            | {Spiderman,"Blade Runner",Starwars}    | {5,17,9,6}       | {0,2}
 ```
 
-#### Criterias
+#### Criteria
 
-The plugin also includes some hibernate criterias to use in your queries. Please check the
-[services](https://github.com/kaleidos/grails-postgresql-extensions/tree/master/grails-app/services/test/criteria/array)
-and the [tests](https://github.com/kaleidos/grails-postgresql-extensions/tree/master/src/integration-test/groovy/net/kaleidos/hibernate/array)
+The plugin also includes some Hibernate criteria to use in your queries. Please check the
+[services](https://github.com/gpc/grails-postgresql-extensions/tree/master/test-apps/app1/grails-app/services/app/criteria/array)
+and the [tests](https://github.com/gpc/grails-postgresql-extensions/tree/master/test-apps/app1/src/integration-test/groovy/array)
 created to see all usage examples.
 
 You can also check the official [Postgresql Array operators](http://www.postgresql.org/docs/9.4/static/functions-array.html#ARRAY-OPERATORS-TABLE).
@@ -727,16 +651,6 @@ class MyService {
 
 It's important to note that the "raw" sql is appended to the criteria, so you need to be sure that it's valid because
 if not you'll get a sql error during runtime.
-
-
-## Authors
-
-You can send any questions to:
-
-- Iván López: lopez.ivan@gmail.com ([@ilopmar](https://twitter.com/ilopmar))
-- Alonso Torres: alonso.javier.torres@gmail.com ([@alotor](https://twitter.com/alotor))
-
-Collaborations are appreciated :-)
 
 
 ## Release Notes

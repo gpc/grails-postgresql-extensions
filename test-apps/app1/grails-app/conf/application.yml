@@ -1,0 +1,15 @@
+info:
+    app:
+        name: '@info.app.name@'
+        version: '@info.app.version@'
+        grailsVersion: '@info.app.grailsVersion@'
+dataSource:
+    pooled: true
+    jmxExport: true
+    driverClassName: org.postgresql.Driver
+    username: postgres_extensions
+    password: postgres_extensions
+    url: 'jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/pg_extensions_test'
+    dbCreate: create-drop
+hibernate:
+    dialect: gpc.pgext.hibernate.PostgresqlExtensionsDialect
