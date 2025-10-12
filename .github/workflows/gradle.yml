@@ -30,11 +30,19 @@ jobs:
         ports:
           - 5432:5432
         options: >-
-          --health-cmd pg_isready
+          --health-cmd "pg_isready -U postgres_extensions -d pg_extensions_test"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
     steps:
+      - name: Install psql client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+      - name: Create extensions
+        env:
+          PGPASSWORD: postgres_extensions
+        run: |
+          until pg_isready -h postgres -p 5432 -U postgres_extensions -d pg_extensions_test; do sleep 1; done
+          psql -h postgres -U postgres_extensions -d pg_extensions_test -c "CREATE EXTENSION IF NOT EXISTS hstore;"
       - name: "📥 Checkout repository"
         uses: actions/checkout@v5
       - name: "☕️ Setup JDK"
