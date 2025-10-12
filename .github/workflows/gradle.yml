@@ -24,6 +24,7 @@ jobs:
       postgres:
         image: postgres
         env:
+          POSTGRES_DB: pg_extensions_test
           POSTGRES_USER: postgres_extensions
           POSTGRES_PASSWORD: postgres_extensions
         ports:
