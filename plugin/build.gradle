@@ -4,7 +4,7 @@ plugins {
 }
 
 version = projectVersion
-group = 'org.grails.plugins'
+group = 'io.github.gpc'
 
 grailsPublish {
     artifactId = 'grails-postgresql-extensions'

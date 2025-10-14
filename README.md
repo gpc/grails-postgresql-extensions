@@ -53,8 +53,8 @@ In `build.gradle` add the following dependencies to install the plugin:
 ```groovy
 dependencies {
     //...
+    implementation 'io.github.gpc:grails-postgresql-extensions:<version>'
     implementation 'org.apache.grails:grails-data-hibernate5'
-    implementation 'org.grails.plugins:grails-postgresql-extensions:<version>'
     //...
 }
 ```
