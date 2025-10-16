@@ -1,0 +1,21 @@
+version = projectVersion
+group = 'test'
+
+apply plugin: 'org.apache.grails.gradle.grails-web'
+
+dependencies {
+
+    implementation platform("org.apache.grails:grails-bom:$grailsVersion")
+
+    implementation project(':grails-postgresql-extensions')
+    implementation 'org.apache.grails:grails-data-hibernate5'
+    implementation 'org.apache.grails:grails-dependencies-starter-web'
+
+    integrationTestImplementation 'org.apache.grails:grails-dependencies-test'
+}
+
+compileJava.options.release = javaVersion.toInteger()
+
+apply {
+    from rootProject.layout.projectDirectory.file('gradle/test-config.gradle')
+}

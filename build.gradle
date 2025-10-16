@@ -1,119 +1,24 @@
-buildscript {
-    ext {
-        grailsVersion = project.grailsVersion
-        gormVersion = project.gormVersion
-    }
+// Workaround needed for nexus publishing bug
+// version and group must be specified in the root project
+// https://github.com/gradle-nexus/publish-plugin/issues/310
+version = projectVersion
+group = 'this.will.be.overridden'
+
+subprojects {
+
     repositories {
-        mavenLocal()
         mavenCentral()
-        jcenter()
-        maven { url 'https://repo.grails.org/grails/core' }
+        maven { url = 'https://repo.grails.org/grails/restricted' }
+        maven {
+            url = 'https://repository.apache.org/content/groups/snapshots'
+            content {
+                includeVersionByRegex('org[.]apache[.](grails|groovy).*', '.*', '.*-SNAPSHOT')
+            }
+        }
     }
-    dependencies {
-        classpath "org.grails:grails-gradle-plugin:$grailsVersion"
-        classpath "org.grails.plugins:hibernate5:7.0.0"
-        classpath 'net.saliman:gradle-cobertura-plugin:2.5.4'
-        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.8.2'
-        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.0"
-    }
-}
 
-version '7.0.0'
-group 'org.grails.plugins'
-
-apply plugin: 'eclipse'
-apply plugin: 'idea'
-apply plugin: 'org.grails.grails-plugin'
-apply plugin: 'org.grails.grails-plugin-publish'
-apply plugin: 'cobertura'
-apply plugin: 'com.github.kt3k.coveralls'
-apply plugin: 'com.jfrog.bintray'
-
-ext {
-    gradleWrapperVersion = project.gradleWrapperVersion
-    grailsVersion = project.grailsVersion
-    gormVersion = project.gormVersion
-    hibernateVersion = project.hibernateVersion
-}
-
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
-cobertura {
-    coverageExcludes = ['.*BootStrap.*', '.*test.*']
-    coverageFormats = ['html', 'xml']
-}
-
-jar {
-    exclude 'test/**'
-    exclude 'UrlMappings.groovy'
-    exclude 'error.gsp'
-    exclude 'messages.properties'
-    exclude 'hibernate/**'
-    exclude 'layouts/**'
-    exclude 'spring/**'
-}
-
-repositories {
-    mavenLocal()
-    mavenCentral()
-    jcenter()
-    maven { url 'https://repo.grails.org/grails/core' }
-}
-
-dependencies {
-    // Grails deps
-    compile 'org.springframework.boot:spring-boot-starter-logging'
-    compile 'org.springframework.boot:spring-boot-autoconfigure'
-    compile 'org.grails:grails-core'
-    compile 'org.springframework.boot:spring-boot-starter-actuator'
-    compile 'org.springframework.boot:spring-boot-starter-tomcat'
-    compile 'org.grails:grails-dependencies'
-    compile 'org.grails:grails-web-boot'
-    console 'org.grails:grails-console'
-
-    profile 'org.grails.profiles:web-plugin'
-    provided 'org.grails:grails-plugin-services'
-    provided 'org.grails:grails-plugin-domain-class'
-    testCompile 'org.grails:grails-gorm-testing-support'
-
-    provided 'org.postgresql:postgresql:42.2.6'
-
-    // plugins
-    provided 'org.grails.plugins:hibernate5'
-
-    // libraries
-    provided "org.hibernate:hibernate-core:$hibernateVersion"
-    provided("org.hibernate:hibernate-ehcache:$hibernateVersion") {
-        exclude group: 'net.sf.ehcache', module: 'ehcache'
-    }
-    compile 'com.google.code.gson:gson:2.8.4'
-}
-
-bintray {
-    pkg {
-        userOrg = 'kaleidos'
-        name = 'postgresql-extensions'
-        issueTrackerUrl = 'https://github.com/kaleidosnet/grails-grails-postgresql-extensions/issues'
-        vcsUrl = 'https://github.com/kaleidosnet/grails-grails-postgresql-extensions/issues'
+    if (name == 'grails-postgresql-extensions') {
+        // This has to be applied here in the root project due to the nexus plugin requirements
+        apply plugin: 'org.apache.grails.gradle.grails-publish'
     }
 }
-
-grailsPublish {
-    user = System.getenv("BINTRAY_USER") ?: ''
-    key = System.getenv("BINTRAY_KEY") ?: ''
-    userOrg = 'kaleidos'
-    repo = 'plugins'
-
-    websiteUrl = 'https://github.com/kaleidos/grails-postgresql-extensions'
-    license {
-        name = 'Apache-2.0'
-    }
-    issueTrackerUrl = 'https://github.com/kaleidosnet/grails-grails-postgresql-extensions/issues'
-    vcsUrl = 'https://github.com/kaleidos/grails-postgresql-extensions.git'
-    title = 'PostgreSQL Extensions'
-    desc = 'This is a grails plugin that provides hibernate user types to use Postgresql native types. It also provides new criterias to query this new native types.'
-    developers = [ivan: 'Iván López']
-}
-
-apply from: "${rootProject.projectDir}/gradle/testVerbose.gradle"

@@ -12,6 +12,9 @@ plugin.xml
 grails-postgresql-extensions-*.zip
 grails-postgresql-extensions-*.zip.sha1
 /.idea
+!/.idea/codeStyles
+!.idea/codeStyles/Project.xml
+!.idea/codeStyles/codeStyleConfig.xml
 *.iml
 *.swp
 *.ids

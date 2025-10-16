@@ -1,0 +1,6 @@
+moduleName=grails-postgresql-extensions
+moduleVersion=1.0
+extensionClasses=\
+  gpc.pgext.hibernate.postgresql.criteria.ArrayCriterias,\
+  gpc.pgext.hibernate.postgresql.criteria.HstoreCriterias,\
+  gpc.pgext.hibernate.postgresql.criteria.JsonCriterias

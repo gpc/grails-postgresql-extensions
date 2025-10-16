@@ -1,0 +1,24 @@
+plugins {
+    id 'groovy-gradle-plugin'
+}
+
+def versions = new Properties()
+file('../gradle.properties').withInputStream {
+    versions.load(it)
+}
+
+repositories {
+    maven { url = 'https://repo.grails.org/grails/restricted' }
+    maven {
+        url = 'https://repository.apache.org/content/groups/snapshots'
+        content {
+            includeVersionByRegex('org[.]apache[.](grails|groovy).*', '.*', '.*-SNAPSHOT')
+        }
+        mavenContent { snapshotsOnly() }
+    }
+}
+
+dependencies {
+    implementation platform("org.apache.grails:grails-bom:${versions['grailsVersion']}")
+    implementation 'org.apache.grails:grails-gradle-plugins'
+}
