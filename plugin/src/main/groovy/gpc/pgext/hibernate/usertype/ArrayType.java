@@ -137,16 +137,13 @@ public class ArrayType implements UserType, ParameterizedType {
 
     @Override
     public int[] sqlTypes() {
-
         Integer type = CLASS_TO_SQL_CODE.get(typeClass);
         if (type != null) {
             return new int[]{type};
         }
-
         if (typeClass.isEnum()) {
             return new int[]{ENUM_INTEGER_ARRAY};
         }
-
         throw new RuntimeException("The type " + typeClass + " is not a valid type");
     }
 
