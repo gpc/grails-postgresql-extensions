@@ -39,7 +39,7 @@ class JsonCriterias {
                         '->>',
                         jsonAttribute,
                         '=',
-                        calculatePropertyValue(self, propertyValue) as String
+                        calculatePropertyValue(self, propertyValue)
                 )
         )
     }
@@ -87,7 +87,7 @@ class JsonCriterias {
                         jsonOp,
                         jsonAttribute,
                         sqlOp,
-                        calculatePropertyValue(self, propertyValue) as String
+                        calculatePropertyValue(self, propertyValue)
                 )
         )
     }

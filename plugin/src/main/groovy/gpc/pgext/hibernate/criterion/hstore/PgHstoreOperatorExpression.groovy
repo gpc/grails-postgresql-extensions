@@ -21,12 +21,8 @@ class PgHstoreOperatorExpression implements Criterion {
     private static final TypedValue[] NO_VALUES = new TypedValue[0]
 
     PgHstoreOperatorExpression(String propertyName, Object value, String operator) {
-        this(propertyName, value as Map<Object, String>, operator)
-    }
-
-    PgHstoreOperatorExpression(String propertyName, Map<Object, String> value, String operator) {
         this.propertyName = propertyName
-        this.value = value
+        this.value = (Map<Object, String>) value
         this.operator = operator
     }
 

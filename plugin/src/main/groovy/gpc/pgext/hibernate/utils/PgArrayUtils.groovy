@@ -31,18 +31,22 @@ class PgArrayUtils {
      * @return an array wrapping the parameter value
      */
     static Object[] getValueAsArrayOfType(Object targetValue, Class expectedType, MapFunction mapFunction) {
-        if (targetValue instanceof Object[]) return (Object[]) targetValue
+        if (targetValue instanceof Object[]) {
+            return (Object[]) targetValue
+        }
 
         def items = (targetValue instanceof Collection) ? (targetValue as List) : [targetValue]
         def converted = items.collect { o ->
-            if (expectedType.isInstance(o)) return o
-            if (mapFunction) return mapFunction.map(o)
+            if (expectedType.isInstance(o)) {
+                return o
+            }
+            if (mapFunction) {
+                return mapFunction.map(o)
+            }
             throw new HibernateException("criteria doesn't support values of type: ${o?.class?.name}. Try: $expectedType or List<$expectedType> instead")
         }
 
-        def arr = Array.newInstance(expectedType, converted.size())
-        converted.eachWithIndex { v, i -> Array.set(arr, i, expectedType.cast(v)) }
-        (Object[]) arr
+        converted.toArray((Object[]) Array.newInstance(expectedType, converted.size()))
     }
 
     /**

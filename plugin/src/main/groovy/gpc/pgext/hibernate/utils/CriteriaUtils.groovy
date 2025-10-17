@@ -55,17 +55,17 @@ class CriteriaUtils {
     }
 
     static Criterion addToCriteria(HibernateCriteriaBuilder target, Criterion criterion) {
-        makeMethodAccessible(AbstractHibernateCriteriaBuilder, 'addToCriteria', Criterion).invoke(
+        (Criterion) makeMethodAccessible(AbstractHibernateCriteriaBuilder, 'addToCriteria', Criterion).invoke(
                 target,
                 criterion
-        ) as Criterion
+        )
     }
 
     static String calculatePropertyName(HibernateCriteriaBuilder target, String propertyName) {
-        makeMethodAccessible(AbstractHibernateCriteriaBuilder, 'calculatePropertyName', String).invoke(
+        (String) makeMethodAccessible(AbstractHibernateCriteriaBuilder, 'calculatePropertyName', String).invoke(
                 target,
                 propertyName
-        ) as String
+        )
     }
 
     static Object calculatePropertyValue(HibernateCriteriaBuilder target, Object propertyValue) {

@@ -1,7 +1,7 @@
 package test.hstore
 
 import app.hstore.TestHstoreMap
-import spock.lang.Ignore
+import spock.lang.PendingFeature
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -100,7 +100,6 @@ class PostgresqlHstoreMapDomainIntegrationSpec extends Specification {
             ['foo,bar': 'baz,qux'] | 'foo,bar' | 'baz,qux'
     }
 
-    @Unroll
     void 'save a domain class with a empty map and validate that is not dirty right after retrieval'() {
         setup:
             def testHstoreMap = new TestHstoreMap(testAttributes: [:])
@@ -118,9 +117,7 @@ class PostgresqlHstoreMapDomainIntegrationSpec extends Specification {
             !retrievedTestHstoreMap.isDirty()
     }
 
-    // TODO seems dirty check doesn't work for Grails 3.3 with Hibernate 5.2 and GORM 6.1.9
-    @Ignore
-    @Unroll
+    @PendingFeature(reason = 'seems dirty check does not work for Grails 3.3 with Hibernate 5.2 and GORM 6.1.9')
     void 'save a domain class, modify it and validate that it is dirty'() {
         setup:
             def testHstoreMap = new TestHstoreMap(testAttributes: [:])

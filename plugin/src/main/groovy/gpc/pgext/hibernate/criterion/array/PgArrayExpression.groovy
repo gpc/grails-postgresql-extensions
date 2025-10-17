@@ -21,6 +21,17 @@ class PgArrayExpression implements Criterion {
     private final Object value
     private final String op
 
+    private static final PgArrayUtils.MapFunction MAP_TO_ENUM = new PgArrayUtils.MapFunction() {
+        @Override
+        Object map(Object o) {
+            try {
+                return ((Enum) o).ordinal()
+            } catch (ClassCastException e) {
+                throw new HibernateException("Unable to cast object $o to Enum", e)
+            }
+        }
+    }
+
     PgArrayExpression(String propertyName, Object value, String op) {
         this.propertyName = propertyName
         this.value = value
@@ -29,35 +40,25 @@ class PgArrayExpression implements Criterion {
 
     @Override
     String toSqlString(Criteria criteria, CriteriaQuery criteriaQuery) throws HibernateException {
-        def arrayType = checkAndGetArrayType(criteria, criteriaQuery)
-        def postgresArrayType = PgArrayUtils.getNativeSqlType(arrayType.getTypeClass()) + '[]'
+        def arrayType = checkAndGetArrayType(criteria, criteriaQuery, propertyName)
+        def postgresArrayType = PgArrayUtils.getNativeSqlType(arrayType.typeClass) + '[]'
         criteriaQuery.findColumns(propertyName, criteria)
-                .collect {"$it $op CAST(? as $postgresArrayType)" }
+                .collect { "$it $op CAST(? as $postgresArrayType)" }
                 .join(' and ')
     }
 
     @Override
     TypedValue[] getTypedValues(Criteria criteria, CriteriaQuery criteriaQuery) throws HibernateException {
-        def arrayType = checkAndGetArrayType(criteria, criteriaQuery)
+        def arrayType = checkAndGetArrayType(criteria, criteriaQuery, propertyName)
         def arrValue = arrayType.typeClass.isEnum() ?
-                PgArrayUtils.getValueAsArrayOfType(value, Integer, mapValueToEnumOrdinal()) :
+                PgArrayUtils.getValueAsArrayOfType(value, Integer, MAP_TO_ENUM) :
                 PgArrayUtils.getValueAsArrayOfType(value, arrayType.typeClass)
         criteriaQuery.getTypedValue(criteria, propertyName, arrValue) as TypedValue[]
     }
 
-    private PgArrayUtils.MapFunction mapValueToEnumOrdinal() {
-        return { Object o ->
-            try {
-                return (o as Enum).ordinal()
-            } catch (ClassCastException e) {
-                throw new HibernateException("Unable to cast object $o to Enum", e)
-            }
-        } as PgArrayUtils.MapFunction
-    }
-
-    private ArrayType checkAndGetArrayType(Criteria criteria, CriteriaQuery criteriaQuery) {
+    private static ArrayType checkAndGetArrayType(Criteria criteria, CriteriaQuery criteriaQuery, String propertyName) {
         def propertyType = criteriaQuery.getType(criteria, propertyName)
-        if (!(propertyType instanceof CustomType) || !((propertyType as CustomType).userType instanceof ArrayType)) {
+        if (!(propertyType instanceof CustomType) || !(((CustomType) propertyType).userType instanceof ArrayType)) {
             throw new HibernateException("Property is not an instance of the postgres type ArrayType. Type is: $propertyType.class")
         }
         (propertyType as CustomType).userType as ArrayType

@@ -143,7 +143,7 @@ class ArrayCriterias {
                 self,
                 new PgArrayILikeFunction(
                         calculatePropertyName(self, propertyName),
-                        calculatePropertyValue(self, propertyValue) as String
+                        (String) calculatePropertyValue(self, propertyValue)
                 )
         )
     }
