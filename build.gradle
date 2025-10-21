@@ -2,7 +2,7 @@
 // version and group must be specified in the root project
 // https://github.com/gradle-nexus/publish-plugin/issues/310
 version = projectVersion
-group = 'this.will.be.overridden'
+group = 'io.github.gpc'
 
 subprojects {
 
