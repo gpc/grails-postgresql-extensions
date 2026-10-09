@@ -4,8 +4,6 @@ import java.lang.reflect.Array
 
 import groovy.transform.CompileStatic
 
-import org.hibernate.HibernateException
-
 /**
  * Utils for the different criteria queries.
  */
@@ -43,7 +41,7 @@ class PgArrayUtils {
             if (mapFunction) {
                 return mapFunction.map(o)
             }
-            throw new HibernateException("criteria doesn't support values of type: ${o?.class?.name}. Try: $expectedType or List<$expectedType> instead")
+            throw new IllegalArgumentException("criteria doesn't support values of type: ${o?.class?.name}. Try: $expectedType or List<$expectedType> instead")
         }
 
         converted.toArray((Object[]) Array.newInstance(expectedType, converted.size()))

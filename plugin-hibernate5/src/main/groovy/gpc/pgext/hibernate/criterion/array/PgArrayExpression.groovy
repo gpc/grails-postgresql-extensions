@@ -49,9 +49,14 @@ class PgArrayExpression implements Criterion {
     @Override
     TypedValue[] getTypedValues(Criteria criteria, CriteriaQuery criteriaQuery) throws HibernateException {
         def arrayType = checkAndGetArrayType(criteria, criteriaQuery, propertyName)
-        def arrValue = arrayType.typeClass.isEnum() ?
-                PgArrayUtils.getValueAsArrayOfType(value, Integer, MAP_TO_ENUM) :
-                PgArrayUtils.getValueAsArrayOfType(value, arrayType.typeClass)
+        Object[] arrValue
+        try {
+            arrValue = arrayType.typeClass.isEnum() ?
+                    PgArrayUtils.getValueAsArrayOfType(value, Integer, MAP_TO_ENUM) :
+                    PgArrayUtils.getValueAsArrayOfType(value, arrayType.typeClass)
+        } catch (IllegalArgumentException e) {
+            throw new HibernateException(e.message, e)
+        }
         criteriaQuery.getTypedValue(criteria, propertyName, arrValue) as TypedValue[]
     }
 

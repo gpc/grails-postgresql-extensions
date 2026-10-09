@@ -1,0 +1,41 @@
+plugins {
+    id 'groovy'
+    id 'java-library'
+}
+
+version = projectVersion
+group = 'io.github.gpc'
+
+grailsPublish {
+    artifactId = 'grails-postgresql-extensions-core'
+    githubSlug = 'gpc/grails-postgresql-extensions'
+    license.name = 'Apache-2.0'
+    title = 'Grails PostgreSQL Extensions Core'
+    desc = 'Hibernate-independent support code shared by the Grails PostgreSQL Extensions plugins.'
+    developers = rootProject.ext.pgextDevelopers
+}
+
+dependencies {
+
+    implementation platform("org.apache.grails:grails-bom:$grailsVersion")
+
+    compileOnly 'org.springframework:spring-core', { // Provided
+        // impl: Assert
+    }
+
+    implementation 'org.apache.groovy:groovy'
+    implementation 'org.slf4j:slf4j-api'
+    api 'org.postgresql:postgresql'
+
+    testImplementation 'org.spockframework:spock-core'
+
+    testRuntimeOnly 'org.springframework:spring-core', {
+        // Assert
+    }
+}
+
+compileJava.options.release = javaVersion.toInteger()
+
+apply {
+    from rootProject.layout.projectDirectory.file('gradle/test-config.gradle')
+}
