@@ -54,7 +54,8 @@ class OrderBySqlFormula {
                 orders.add(Math.min(position, orders.size()), cb.asc(cb.function(PgSqlFunction.EXPRESSION, Object, cb.literal(formula))))
                 criteriaQuery.orderBy(orders)
             }
-            // No predicate, so the order does not change the result of an or {} or not {} it is called in
+            // No predicate, so the order does not change the result of an or {} or not {} it is called in.
+            // An or {} with only an order is empty though, which matches no rows
             null
         } as PgCriterion.PredicateFactory)
     }

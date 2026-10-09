@@ -104,6 +104,7 @@ GORM 8.0.0 for Hibernate 7 has no API for custom criteria to use the joins of th
   outer join, but GORM criteria on the same alias do not.
 - `order(sqlFormula(...))` and `order(byRandom())` are added to the orders when the query is created, in the position
   they were called in. Calling them inside `or {}` or `not {}` does not change the result of the junction.
+  An `or {}` that only contains such an order is empty, which matches no rows.
 
 ## Configuration
 

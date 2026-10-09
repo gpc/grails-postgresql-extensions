@@ -27,8 +27,9 @@ class CriteriaUtils {
      *
      * GORM resolves an alias created with {@code createAlias} to a join of its own, which a criterion handler
      * cannot look up. When the property is on an alias with an inner join, an always true restriction on the
-     * alias is added before the criterion, so GORM creates that join before the criterion uses it, and the
-     * criteria of GORM and of this plugin on the alias apply to the same join.
+     * property ({@code l.favoriteNumbers is null or l.favoriteNumbers is not null}) is added before the criterion,
+     * so GORM creates that join before the criterion uses it, and the criteria of GORM and of this plugin on the
+     * alias apply to the same join.
      *
      * GORM 8.0.0 always creates the join of an alias as an inner join, so for an alias with an outer join the
      * criterion uses the join of the association with the join type of the alias instead.
@@ -44,8 +45,7 @@ class CriteriaUtils {
         if (criterion.joinType != JoinType.INNER) {
             return addToCriteria(self, criterion)
         }
-        String identity = "${association.alias}.${association.association.associatedEntity.identity.name}"
-        def resolveAlias = new Query.Disjunction([new Query.IsNull(identity), new Query.IsNotNull(identity)] as List<Query.Criterion>)
+        def resolveAlias = new Query.Disjunction([new Query.IsNull(propertyName), new Query.IsNotNull(propertyName)] as List<Query.Criterion>)
         self.hibernateQuery.add(new Query.Conjunction([resolveAlias, criterion] as List<Query.Criterion>))
         self
     }
