@@ -2,8 +2,6 @@ package gpc.pgext.hibernate.postgresql.criteria
 
 import groovy.transform.CompileStatic
 
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import jakarta.persistence.criteria.AbstractQuery
 import jakarta.persistence.criteria.From
 import jakarta.persistence.criteria.Path
@@ -13,15 +11,15 @@ import grails.orm.HibernateCriteriaBuilder
 import org.grails.datastore.mapping.query.api.Criteria
 
 import gpc.pgext.hibernate.criterion.PgCriterion
+import gpc.pgext.hibernate.utils.JsonUtils
 
 import static gpc.pgext.hibernate.criterion.PgCriterion.sql
+import static gpc.pgext.hibernate.criterion.PgCriterion.text
 import static gpc.pgext.hibernate.utils.CriteriaUtils.addToCriteria
 import static gpc.pgext.hibernate.utils.CriteriaUtils.calculatePropertyName
 
 @CompileStatic
 class JsonCriterias {
-
-    private static final Gson GSON = new GsonBuilder().serializeNulls().create()
 
     /**
      * Creates a "json has field value" Criterion based on the specified property name and value
@@ -31,7 +29,7 @@ class JsonCriterias {
      * @return The criteria
      */
     static Criteria pgJsonHasFieldValue(HibernateCriteriaBuilder self, String propertyName, String jsonAttribute, Object propertyValue) {
-        addToCriteria(self, jsonExpression(calculatePropertyName(self, propertyName), '->>', jsonAttribute, '=', propertyValue))
+        addToCriteria(self, propertyName, jsonExpression(calculatePropertyName(self, propertyName), '->>', jsonAttribute, '=', propertyValue))
     }
 
     /**
@@ -41,7 +39,7 @@ class JsonCriterias {
      * @return The criteria
      */
     static Criteria pgJsonbContains(HibernateCriteriaBuilder self, String propertyName, Object propertyValue) {
-        addToCriteria(self, jsonbOperator(calculatePropertyName(self, propertyName), propertyValue, '@>'))
+        addToCriteria(self, propertyName, jsonbOperator(calculatePropertyName(self, propertyName), propertyValue, '@>'))
     }
 
     /**
@@ -51,7 +49,7 @@ class JsonCriterias {
      * @return The criteria
      */
     static Criteria pgJsonbIsContained(HibernateCriteriaBuilder self, String propertyName, Object propertyValue) {
-        addToCriteria(self, jsonbOperator(calculatePropertyName(self, propertyName), propertyValue, '<@'))
+        addToCriteria(self, propertyName, jsonbOperator(calculatePropertyName(self, propertyName), propertyValue, '<@'))
     }
 
     /**
@@ -64,18 +62,18 @@ class JsonCriterias {
      * @return The criteria
      */
     static Criteria pgJson(HibernateCriteriaBuilder self, String propertyName, String jsonOp, String jsonAttribute, String sqlOp, Object propertyValue) {
-        addToCriteria(self, jsonExpression(calculatePropertyName(self, propertyName), jsonOp, jsonAttribute, sqlOp, propertyValue))
+        addToCriteria(self, propertyName, jsonExpression(calculatePropertyName(self, propertyName), jsonOp, jsonAttribute, sqlOp, propertyValue))
     }
 
     private static PgCriterion jsonExpression(String propertyName, String jsonOp, String jsonAttribute, String sqlOp, Object value) {
         String attribute = jsonAttribute.replace("'", "''")
         new PgCriterion(propertyName, { AbstractQuery<?> query, From<?, ?> root, JpaCriteriaBuilder cb, Path<?> property ->
-            sql(cb, "?$jsonOp'$attribute' $sqlOp ?", property, cb.value(String.valueOf(value)))
+            sql(cb, "?$jsonOp'$attribute' $sqlOp ?", property, text(cb, value))
         } as PgCriterion.PredicateFactory)
     }
 
     private static PgCriterion jsonbOperator(String propertyName, Object value, String op) {
-        String json = GSON.toJson(value)
+        String json = JsonUtils.toJson(value)
         new PgCriterion(propertyName, { AbstractQuery<?> query, From<?, ?> root, JpaCriteriaBuilder cb, Path<?> property ->
             sql(cb, "? $op CAST(? AS jsonb)", property, cb.value(json))
         } as PgCriterion.PredicateFactory)

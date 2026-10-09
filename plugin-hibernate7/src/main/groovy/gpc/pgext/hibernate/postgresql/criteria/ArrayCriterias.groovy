@@ -16,6 +16,7 @@ import gpc.pgext.hibernate.criterion.PgCriterion
 import gpc.pgext.hibernate.utils.PgArrayUtils
 
 import static gpc.pgext.hibernate.criterion.PgCriterion.sql
+import static gpc.pgext.hibernate.criterion.PgCriterion.text
 import static gpc.pgext.hibernate.utils.CriteriaUtils.addToCriteria
 import static gpc.pgext.hibernate.utils.CriteriaUtils.calculatePropertyName
 
@@ -39,7 +40,7 @@ class ArrayCriterias {
      * @return The criteria
      */
     static Criteria pgArrayContains(HibernateCriteriaBuilder self, String propertyName, Object propertyValue) {
-        addToCriteria(self, arrayExpression(calculatePropertyName(self, propertyName), propertyValue, '@>'))
+        addToCriteria(self, propertyName, arrayExpression(calculatePropertyName(self, propertyName), propertyValue, '@>'))
     }
 
     /**
@@ -49,7 +50,7 @@ class ArrayCriterias {
      * @return The criteria
      */
     static Criteria pgArrayIsContainedBy(HibernateCriteriaBuilder self, String propertyName, Object propertyValue) {
-        addToCriteria(self, arrayExpression(calculatePropertyName(self, propertyName), propertyValue, '<@'))
+        addToCriteria(self, propertyName, arrayExpression(calculatePropertyName(self, propertyName), propertyValue, '<@'))
     }
 
     /**
@@ -59,7 +60,7 @@ class ArrayCriterias {
      * @return The criteria
      */
     static Criteria pgArrayOverlaps(HibernateCriteriaBuilder self, String propertyName, Object propertyValue) {
-        addToCriteria(self, arrayExpression(calculatePropertyName(self, propertyName), propertyValue, '&&'))
+        addToCriteria(self, propertyName, arrayExpression(calculatePropertyName(self, propertyName), propertyValue, '&&'))
     }
 
     /**
@@ -68,7 +69,7 @@ class ArrayCriterias {
      * @return The criteria
      */
     static Criteria pgArrayIsEmpty(HibernateCriteriaBuilder self, String propertyName) {
-        addToCriteria(self, emptinessExpression(calculatePropertyName(self, propertyName), '='))
+        addToCriteria(self, propertyName, emptinessExpression(calculatePropertyName(self, propertyName), '='))
     }
 
     /**
@@ -77,7 +78,7 @@ class ArrayCriterias {
      * @return The criteria
      */
     static Criteria pgArrayIsNotEmpty(HibernateCriteriaBuilder self, String propertyName) {
-        addToCriteria(self, emptinessExpression(calculatePropertyName(self, propertyName), '<>'))
+        addToCriteria(self, propertyName, emptinessExpression(calculatePropertyName(self, propertyName), '<>'))
     }
 
     /**
@@ -92,8 +93,8 @@ class ArrayCriterias {
     static Criteria pgArrayIsEmptyOrContains(HibernateCriteriaBuilder self, String propertyName, Object propertyValue) {
         def name = calculatePropertyName(self, propertyName)
         propertyValue ?
-            addToCriteria(self, arrayExpression(name, propertyValue, '@>')) :
-            addToCriteria(self, emptinessExpression(name, '='))
+            addToCriteria(self, propertyName, arrayExpression(name, propertyValue, '@>')) :
+            addToCriteria(self, propertyName, emptinessExpression(name, '='))
     }
 
     /**
@@ -103,7 +104,7 @@ class ArrayCriterias {
      * @return The criteria
      */
     static Criteria pgArrayEquals(HibernateCriteriaBuilder self, String propertyName, Object propertyValue) {
-        addToCriteria(self, arrayExpression(calculatePropertyName(self, propertyName), propertyValue, '='))
+        addToCriteria(self, propertyName, arrayExpression(calculatePropertyName(self, propertyName), propertyValue, '='))
     }
 
     /**
@@ -113,7 +114,7 @@ class ArrayCriterias {
      * @return The criteria
      */
     static Criteria pgArrayNotEquals(HibernateCriteriaBuilder self, String propertyName, Object propertyValue) {
-        addToCriteria(self, arrayExpression(calculatePropertyName(self, propertyName), propertyValue, '<>'))
+        addToCriteria(self, propertyName, arrayExpression(calculatePropertyName(self, propertyName), propertyValue, '<>'))
     }
 
     /**
@@ -124,8 +125,8 @@ class ArrayCriterias {
      */
     static Criteria pgArrayILike(HibernateCriteriaBuilder self, String propertyName, Object propertyValue) {
         String value = (String) propertyValue
-        addToCriteria(self, new PgCriterion(calculatePropertyName(self, propertyName), { AbstractQuery<?> query, From<?, ?> root, JpaCriteriaBuilder cb, Path<?> property ->
-            sql(cb, 'text(?) ilike ?', property, cb.value(value))
+        addToCriteria(self, propertyName, new PgCriterion(calculatePropertyName(self, propertyName), { AbstractQuery<?> query, From<?, ?> root, JpaCriteriaBuilder cb, Path<?> property ->
+            sql(cb, 'text(?) ilike ?', property, text(cb, value))
         } as PgCriterion.PredicateFactory))
     }
 

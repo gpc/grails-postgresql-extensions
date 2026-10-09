@@ -18,7 +18,9 @@ import gpc.pgext.hibernate.criterion.PgSqlFunction
  * without any verification.
  *
  * GORM for Hibernate 7 only orders by properties, so the order is added to the query as a {@link PgCriterion}
- * that appends the formula to the orders of the query when the criteria is turned into SQL.
+ * that inserts the formula among the orders of the query when the criteria is turned into SQL. This relies on GORM
+ * adding the property orders to the query before its predicates, which the order tests of the test apps check.
+ * See https://github.com/apache/grails-core/issues/16563
  */
 @CompileStatic
 class OrderBySqlFormula {
@@ -39,19 +41,21 @@ class OrderBySqlFormula {
     }
 
     /**
+     * @param position The position of this order among the orders of the criteria
      * @return The criterion that adds this order to the query
      */
-    PgCriterion toCriterion() {
+    PgCriterion toCriterion(int position) {
         String formula = sqlFormula
-        new PgCriterion(null, { AbstractQuery<?> query, From<?, ?> root, JpaCriteriaBuilder cb, Path<?> property ->
+        PgCriterion.order({ AbstractQuery<?> query, From<?, ?> root, JpaCriteriaBuilder cb, Path<?> property ->
             // Only queries for the entity are ordered, not count queries or other projections
             if (query instanceof CriteriaQuery && ((CriteriaQuery<?>) query).resultType == root.javaType) {
                 def criteriaQuery = (CriteriaQuery<?>) query
                 List<Order> orders = new ArrayList<>(criteriaQuery.orderList)
-                orders << cb.asc(cb.function(PgSqlFunction.EXPRESSION, Object, cb.literal(formula)))
+                orders.add(Math.min(position, orders.size()), cb.asc(cb.function(PgSqlFunction.EXPRESSION, Object, cb.literal(formula))))
                 criteriaQuery.orderBy(orders)
             }
-            cb.conjunction()
+            // No predicate, so the order does not change the result of an or {} or not {} it is called in
+            null
         } as PgCriterion.PredicateFactory)
     }
 

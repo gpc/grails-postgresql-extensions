@@ -51,4 +51,17 @@ class PgHstoreContainsKeyIntegrationSpec extends Specification {
         then:
             result.size() == 0
     }
+
+    void 'Test a null key matches no key, not even the text null'() {
+        setup:
+            new TestHstoreMap(testAttributes: ['null': 'a']).save(flush: true, failOnError: true)
+
+        when:
+            def result = TestHstoreMap.withCriteria {
+                pgHstoreContainsKey('testAttributes', null)
+            }
+
+        then:
+            result.empty
+    }
 }
