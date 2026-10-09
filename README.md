@@ -47,8 +47,10 @@ More native types and query methods will be added in the future.
 
 ## Installation
 
-The Grails 7 version of this plugin supports Hibernate 5.
-In `build.gradle` add the following dependencies to install the plugin:
+The Grails 8 version of this plugin supports both Hibernate 5 and Hibernate 7, with a plugin for each.
+In `build.gradle` add the dependencies for the Hibernate version of your application.
+
+Hibernate 5:
 
 ```groovy
 dependencies {
@@ -58,6 +60,30 @@ dependencies {
     //...
 }
 ```
+
+Hibernate 7:
+
+```groovy
+dependencies {
+    //...
+    implementation 'io.github.gpc:grails-postgresql-extensions-hibernate7:<version>'
+    implementation 'org.apache.grails:grails-data-hibernate7'
+    //...
+}
+```
+
+Both plugins provide the same user types, dialect, criteria and orders, in the same packages, so the domain classes
+and queries of an application do not change when it moves from Hibernate 5 to Hibernate 7.
+
+> [!NOTE]
+> With GORM 8.0.0 for Hibernate 7, the default `native` id generator does not create its sequences on PostgreSQL.
+> Until this is fixed in GORM, use the `sequence` generator in `grails-app/conf/application.groovy`:
+>
+> ```groovy
+> grails.gorm.default.mapping = {
+>     id generator: 'sequence'
+> }
+> ```
 
 ## Configuration
 

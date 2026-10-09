@@ -1,0 +1,35 @@
+plugins {
+    id 'java-library'
+    id 'org.apache.grails.gradle.grails-plugin'
+}
+
+version = projectVersion
+group = 'io.github.gpc'
+
+grailsPublish {
+    artifactId = 'grails-postgresql-extensions-hibernate7'
+    githubSlug = 'gpc/grails-postgresql-extensions'
+    license.name = 'Apache-2.0'
+    title = 'Grails PostgreSQL Extensions Plugin for Hibernate 7'
+    desc = 'A Grails plugin that adds Hibernate 7 UserTypes for PostgreSQL native types, ' +
+           'like Array, HStore, JSON, JSONB, ..., and GORM criteria extensions to query them.'
+    developers = rootProject.ext.pgextDevelopers
+}
+
+dependencies {
+
+    implementation platform("org.apache.grails:grails-bom:$grailsVersion")
+
+    api project(':grails-postgresql-extensions-core')
+
+    compileOnly 'org.apache.grails:grails-core', { // Provided
+        // impl: Plugin
+    }
+    compileOnly 'org.apache.grails:grails-data-hibernate7', {
+        // Must be provided by the Grails application
+    }
+
+    api 'com.google.code.gson:gson'
+}
+
+compileJava.options.release = javaVersion.toInteger()
