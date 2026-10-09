@@ -19,34 +19,7 @@ jobs:
     if: ${{ !contains(github.event.head_commit.message, '[skip tests]') }}
     name: "Test"
     runs-on: ubuntu-24.04
-    container: ubuntu
-    services:
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_DB: pg_extensions_test
-          POSTGRES_USER: postgres_extensions
-          POSTGRES_PASSWORD: postgres_extensions
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U postgres_extensions -d pg_extensions_test"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
     steps:
-      - name: Install psql client
-        env:
-          DEBIAN_FRONTEND: noninteractive
-        run: |
-          apt-get update
-          apt-get install -y --no-install-recommends postgresql-client
-      - name: Create extensions
-        env:
-          PGPASSWORD: postgres_extensions
-        run: |
-          until pg_isready -h postgres -p 5432 -U postgres_extensions -d pg_extensions_test; do sleep 1; done
-          psql -h postgres -U postgres_extensions -d pg_extensions_test -c "CREATE EXTENSION IF NOT EXISTS hstore;"
       - name: "📥 Checkout repository"
         uses: actions/checkout@v5
       - name: "☕️ Setup JDK"
@@ -60,9 +33,6 @@ jobs:
           develocity-access-key: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
       - name: "🏃‍♂️ Run Checks"
         id: build
-        env:
-          POSTGRES_HOST: postgres
-          POSTGRES_PORT: 5432
         run: ./gradlew check --continue
   publish_snapshot:
     needs: tests

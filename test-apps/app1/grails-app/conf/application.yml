@@ -13,3 +13,9 @@ dataSource:
     dbCreate: create-drop
 hibernate:
     dialect: gpc.pgext.hibernate.PostgresqlExtensionsDialect
+environments:
+    test:
+        dataSource:
+            # Each test run gets its own PostgreSQL container with the hstore extension
+            driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
+            url: 'jdbc:tc:postgresql:17:///pg_extensions_test?TC_INITSCRIPT=init-pg-extensions.sql&TC_DAEMON=true'

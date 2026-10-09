@@ -12,6 +12,7 @@ dependencies {
     implementation 'org.apache.grails:grails-dependencies-starter-web'
 
     integrationTestImplementation 'org.apache.grails:grails-dependencies-test'
+    integrationTestRuntimeOnly 'org.testcontainers:testcontainers-postgresql'
 }
 
 compileJava.options.release = javaVersion.toInteger()
