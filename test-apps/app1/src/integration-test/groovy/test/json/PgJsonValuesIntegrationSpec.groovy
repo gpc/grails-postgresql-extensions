@@ -76,4 +76,18 @@ class PgJsonValuesIntegrationSpec extends Specification {
             'Iván' || 1
             'John' || 3
     }
+
+    void 'Test a null value matches no json value, not even the text null'() {
+        setup:
+            new TestMapJson(data: [name: 'null']).save(flush: true)
+            new TestMapJson(data: [name: 'Iván']).save(flush: true)
+
+        when:
+            def result = TestMapJson.withCriteria {
+                pgJsonHasFieldValue('data', 'name', null)
+            }
+
+        then:
+            result.empty
+    }
 }

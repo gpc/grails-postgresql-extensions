@@ -33,8 +33,17 @@ buildCache {
 
 rootProject.name = 'postgresql-extensions.ROOT'
 
-include('plugin')
-findProject(':plugin').name = 'grails-postgresql-extensions'
+include('plugin-core')
+findProject(':plugin-core').name = 'grails-postgresql-extensions-core'
+
+include('plugin-hibernate5')
+findProject(':plugin-hibernate5').name = 'grails-postgresql-extensions'
+
+include('plugin-hibernate7')
+findProject(':plugin-hibernate7').name = 'grails-postgresql-extensions-hibernate7'
 
 include('test-app1')
 project(':test-app1').projectDir = new File(settingsDir, 'test-apps/app1')
+
+include('test-app2')
+project(':test-app2').projectDir = new File(settingsDir, 'test-apps/app2')

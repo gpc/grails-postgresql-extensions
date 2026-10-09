@@ -1,0 +1,45 @@
+version = projectVersion
+group = 'test'
+
+apply plugin: 'org.apache.grails.gradle.grails-web'
+
+dependencies {
+
+    implementation platform("org.apache.grails:grails-bom:$grailsVersion")
+
+    implementation project(':grails-postgresql-extensions-hibernate7')
+    implementation 'org.apache.grails:grails-data-hibernate7'
+    implementation 'org.apache.grails:grails-dependencies-starter-web'
+
+    integrationTestImplementation 'org.apache.grails:grails-dependencies-test'
+    integrationTestRuntimeOnly 'org.testcontainers:testcontainers-postgresql'
+}
+
+// test-app2 runs the domain classes, services and integration specs of test-app1 on Hibernate 7
+def app1 = rootProject.layout.projectDirectory.dir('test-apps/app1')
+sourceSets {
+    main {
+        groovy {
+            srcDir app1.dir('grails-app/domain')
+            srcDir app1.dir('grails-app/services')
+            srcDir app1.dir('grails-app/init')
+        }
+        resources {
+            srcDir app1.dir('grails-app/conf/spring')
+        }
+    }
+    integrationTest {
+        groovy {
+            srcDir app1.dir('src/integration-test/groovy')
+        }
+        resources {
+            srcDir app1.dir('src/integration-test/resources')
+        }
+    }
+}
+
+compileJava.options.release = javaVersion.toInteger()
+
+apply {
+    from rootProject.layout.projectDirectory.file('gradle/test-config.gradle')
+}

@@ -4,6 +4,43 @@
 version = projectVersion
 group = 'io.github.gpc'
 
+def publishedProjects = [
+        'grails-postgresql-extensions-core',
+        'grails-postgresql-extensions',
+        'grails-postgresql-extensions-hibernate7',
+]
+
+ext.pgextDevelopers = [
+        ilopmar: 'Iván López',
+        alotor: 'Alonso Torres',
+        mattfeury: 'Matt Feury',
+        alvarosanchez: 'Alvaro Sanchez-Mariscal',
+        aeischeid: 'Aaron Eischeid',
+        mkobel: 'Moritz Kobel',
+        manuelvio: 'Manuel Unno Vio',
+        bameda: 'David Barragán Merino',
+        nobeans: 'Yasuharu Nakano',
+        burtbeckwith: 'Burt Beckwith',
+        timic: 'Timur Salyakhutdinov',
+        zlegein: 'Zach Legein',
+        tmarthal: 'Tom Marthaler',
+        pabloalba: 'Pablo Alba',
+        cornercase: 'Eamon Doyle',
+        poundex: 'Adam Pounder',
+        gregopet: 'Gregor Petrin',
+        unknown: 'Tom Potts',
+        sabst: 'Sabst',
+        donbeave: 'Alexey Zhokov',
+        jglapa: 'Jakub Glapa',
+        jamesdh: 'James Hardwick',
+        butters16: 'John Keith',
+        erichelgeson: 'Eric Helgeson',
+        albertop19: 'albertop19',
+        gtors: 'Andrey T',
+        matrei: 'Mattias Reichel',
+        sbglasius: 'Søren Berg Glasius'
+]
+
 subprojects {
 
     repositories {
@@ -17,7 +54,7 @@ subprojects {
         }
     }
 
-    if (name == 'grails-postgresql-extensions') {
+    if (name in publishedProjects) {
         // This has to be applied here in the root project due to the nexus plugin requirements
         apply plugin: 'org.apache.grails.gradle.grails-publish'
     }
