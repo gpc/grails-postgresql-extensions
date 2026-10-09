@@ -15,6 +15,29 @@ dependencies {
     integrationTestRuntimeOnly 'org.testcontainers:testcontainers-postgresql'
 }
 
+// test-app2 runs the domain classes, services and integration specs of test-app1 on Hibernate 7
+def app1 = rootProject.layout.projectDirectory.dir('test-apps/app1')
+sourceSets {
+    main {
+        groovy {
+            srcDir app1.dir('grails-app/domain')
+            srcDir app1.dir('grails-app/services')
+            srcDir app1.dir('grails-app/init')
+        }
+        resources {
+            srcDir app1.dir('grails-app/conf/spring')
+        }
+    }
+    integrationTest {
+        groovy {
+            srcDir app1.dir('src/integration-test/groovy')
+        }
+        resources {
+            srcDir app1.dir('src/integration-test/resources')
+        }
+    }
+}
+
 compileJava.options.release = javaVersion.toInteger()
 
 apply {
