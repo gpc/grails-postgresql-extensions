@@ -44,3 +44,6 @@ findProject(':plugin-hibernate7').name = 'grails-postgresql-extensions-hibernate
 
 include('test-app1')
 project(':test-app1').projectDir = new File(settingsDir, 'test-apps/app1')
+
+include('test-app2')
+project(':test-app2').projectDir = new File(settingsDir, 'test-apps/app2')
