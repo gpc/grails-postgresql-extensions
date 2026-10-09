@@ -5,7 +5,9 @@ import groovy.transform.CompileStatic
 import org.hibernate.boot.model.TypeContributions
 import org.hibernate.dialect.PostgreSQLDialect
 import org.hibernate.service.ServiceRegistry
-import org.hibernate.type.descriptor.sql.internal.DdlTypeImpl
+import org.hibernate.type.descriptor.java.JavaType
+import org.hibernate.type.descriptor.jdbc.JdbcType
+import org.hibernate.type.descriptor.sql.DdlType
 
 import gpc.pgext.hibernate.usertype.ArrayType
 import gpc.pgext.hibernate.usertype.HstoreMapType
@@ -36,7 +38,48 @@ class PostgresqlExtensionsDialect extends PostgreSQLDialect {
         super.contributeTypes(typeContributions, serviceRegistry)
         def ddlTypeRegistry = typeContributions.typeConfiguration.ddlTypeRegistry
         COLUMN_TYPES.each { Integer sqlType, String typeName ->
-            ddlTypeRegistry.addDescriptor(new DdlTypeImpl(sqlType, typeName, this))
+            ddlTypeRegistry.addDescriptor(new FixedDdlType(sqlType, typeName))
+        }
+    }
+
+    /**
+     * The column type of a user type, which is always the same type name
+     */
+    private static class FixedDdlType implements DdlType {
+
+        private static final long serialVersionUID = 1L
+
+        private final int sqlTypeCode
+        private final String typeName
+
+        FixedDdlType(int sqlTypeCode, String typeName) {
+            this.sqlTypeCode = sqlTypeCode
+            this.typeName = typeName
+        }
+
+        @Override
+        int getSqlTypeCode() {
+            sqlTypeCode
+        }
+
+        @Override
+        String getRawTypeName() {
+            typeName
+        }
+
+        @Override
+        String getTypeName(Long size, Integer precision, Integer scale) {
+            typeName
+        }
+
+        @Override
+        String getCastTypeName(JdbcType jdbcType, JavaType<?> javaType) {
+            typeName
+        }
+
+        @Override
+        String getCastTypeName(JdbcType jdbcType, JavaType<?> javaType, Long length, Integer precision, Integer scale) {
+            typeName
         }
     }
 }

@@ -76,7 +76,8 @@ Both plugins provide the same user types, dialect, criteria and orders, in the s
 and queries of an application do not change when it moves from Hibernate 5 to Hibernate 7.
 
 > [!NOTE]
-> With GORM 8.0.0 for Hibernate 7, the default `native` id generator does not create its sequences on PostgreSQL.
+> With GORM 8.0.0 for Hibernate 7, the default `native` id generator does not create its sequences on PostgreSQL
+> ([apache/grails-core#16561](https://github.com/apache/grails-core/issues/16561)).
 > Until this is fixed in GORM, use the `sequence` generator in `grails-app/conf/application.groovy`:
 >
 > ```groovy
@@ -84,6 +85,25 @@ and queries of an application do not change when it moves from Hibernate 5 to Hi
 >     id generator: 'sequence'
 > }
 > ```
+
+### Upgrading to 9.0.0
+
+- The Hibernate independent classes, like `HstoreHelper` and `PgArrayUtils`, moved to the
+  `grails-postgresql-extensions-core` module, which both plugins depend on. Their packages did not change.
+- `PgArrayUtils.getValueAsArrayOfType` now throws an `IllegalArgumentException` instead of a `HibernateException` for
+  values of an unsupported type. The array criteria still throw a `HibernateException`.
+
+### Hibernate 7 limitations
+
+GORM 8.0.0 for Hibernate 7 has no API for custom criteria to use the joins of the query, or to order by an SQL formula
+([apache/grails-core#16563](https://github.com/apache/grails-core/issues/16563)), so the plugin works around it:
+
+- A criterion on an alias created with `createAlias` uses the same join as the GORM criteria on the alias, when the
+  alias uses an inner join. GORM 8.0.0 creates the join of an alias as an inner join even when `createAlias` asks for an
+  outer join ([apache/grails-core#16562](https://github.com/apache/grails-core/issues/16562)), so for an outer join alias the criteria of the plugin use an
+  outer join, but GORM criteria on the same alias do not.
+- `order(sqlFormula(...))` and `order(byRandom())` are added to the orders when the query is created, in the position
+  they were called in. Calling them inside `or {}` or `not {}` does not change the result of the junction.
 
 ## Configuration
 
@@ -680,6 +700,8 @@ if not you'll get a sql error during runtime.
 
 
 ## Release Notes
+
+From 8.0.0 and forward release notes can be found on [GitHub](https://github.com/gpc/grails-postgresql-extensions/releases)
 
 Version | Date        | Comments
 ------- | ------------| ---------

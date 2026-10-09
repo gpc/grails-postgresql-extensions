@@ -46,6 +46,7 @@ class GrailsPostgresqlExtensionsGrailsPlugin extends Plugin {
             [name: 'albertop19'],
             [name: 'Andrey T'],
             [name: 'Mattias Reichel'],
+            [name: 'Søren Berg Glasius'],
     ]
     def issueManagement = [
             system: 'GITHUB',
