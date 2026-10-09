@@ -24,11 +24,10 @@ class PgArrayExpression implements Criterion {
     private static final PgArrayUtils.MapFunction MAP_TO_ENUM = new PgArrayUtils.MapFunction() {
         @Override
         Object map(Object o) {
-            try {
+            if (o instanceof Enum) {
                 return ((Enum) o).ordinal()
-            } catch (ClassCastException e) {
-                throw new HibernateException("Unable to cast object $o to Enum", e)
             }
+            throw new HibernateException("Unable to cast object $o to Enum")
         }
     }
 
